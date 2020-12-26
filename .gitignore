@@ -1,0 +1,17 @@
+config.rb
+html/*png
+html/u*html
+html/statistics*html
+html/user*html
+html/teams*html
+html/feed*html
+html/index.html
+html/rules.html
+sgetlog
+calclog
+tbllog
+rsynclog
+*.db
+aeromake.sh
+*.gz
+*.log
