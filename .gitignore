@@ -12,6 +12,6 @@ calclog
 tbllog
 rsynclog
 *.db
-aeromake.sh
 *.gz
 *.log
+html0

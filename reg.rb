@@ -63,8 +63,8 @@ get '/reg2' do
 #        db = SQLite3::Database.new("../aero20/2020.db")
         db = Mysql2::Client.new(:host => "localhost", :username => DBUSER, :password => DBPASSWD, :database => DB, :encoding => "utf8mb4")
         fullname="#{params[:fname]} #{params[:lname]}"
-        p("REPLACE INTO runners VALUES (#{session[:sid]},'#{fullname}', '#{session[:uname]}', '#{params[:email]}', 0, #{params[:volume]}, #{session[:sex]}, '#{session[:acctoken]}', '#{session[:reftoken]}', '#{session[:city]}', '#{session[:state]}', '#{session[:country]}')")
-        db.query("REPLACE INTO runners VALUES (#{session[:sid]},'#{fullname}', '#{session[:uname]}', '#{params[:email]}', 0, #{params[:volume]}, #{session[:sex]}, '#{session[:acctoken]}', '#{session[:reftoken]}', '#{session[:city]}', '#{session[:state]}', '#{session[:country]}')")
+        p("REPLACE INTO runners VALUES (#{session[:sid]},'#{fullname}', '#{session[:uname]}', '#{params[:email]}', 0, #{params[:volume].to_i}, #{session[:sex]}, '#{session[:acctoken]}', '#{session[:reftoken]}', '#{session[:city]}', '#{session[:state]}', '#{session[:country]}')")
+        db.query("REPLACE INTO runners VALUES (#{session[:sid]},'#{db.escape(fullname)}', '#{session[:uname]}', '#{params[:email]}', 0, #{params[:volume].to_i}, #{session[:sex]}, '#{session[:acctoken]}', '#{session[:reftoken]}', '#{db.escape(session[:city])}', '#{db.escape(session[:state])}', '#{db.escape(session[:country])}')")
 
         d = db.query("SELECT * FROM runners WHERE runnerid=#{session[:sid]}", :as => :array).each[0]
         p "INS/REPL RES: #{d}"
