@@ -36,12 +36,12 @@ get '/reg1' do
         j = JSON.parse(response.body)
         puts "TOKENRES: #{j}"
         session[:sid]=j['athlete']['id']
-        session[:uname]=j['athlete']['username']
-        session[:fname]=j['athlete']['firstname']
-        session[:lname]=j['athlete']['lastname']
-        session[:city]=j['athlete']['city']
-        session[:state]=j['athlete']['state']
-        session[:country]=j['athlete']['country']
+        session[:uname]=j['athlete']['username'] || ''
+        session[:fname]=j['athlete']['firstname'] || ''
+        session[:lname]=j['athlete']['lastname'] || ''
+        session[:city]=j['athlete']['city'] || ''
+        session[:state]=j['athlete']['state'] || ''
+        session[:country]=j['athlete']['country'] || ''
         session[:sex]=j['athlete']['sex']=='F' ? 0 : 1
         session[:acctoken]=j['access_token']
         session[:reftoken]=j['refresh_token']
@@ -62,9 +62,13 @@ get '/reg2' do
         retries ||= 0
 #        db = SQLite3::Database.new("../aero20/2020.db")
         db = Mysql2::Client.new(:host => "localhost", :username => DBUSER, :password => DBPASSWD, :database => DB, :encoding => "utf8mb4")
-        fullname="#{params[:fname]} #{params[:lname]}"
-        p("REPLACE INTO runners VALUES (#{session[:sid]},'#{fullname}', '#{session[:uname]}', '#{params[:email]}', 0, #{params[:volume].to_i}, #{session[:sex]}, '#{session[:acctoken]}', '#{session[:reftoken]}', '#{session[:city]}', '#{session[:state]}', '#{session[:country]}')")
-        db.query("REPLACE INTO runners VALUES (#{session[:sid]},'#{db.escape(fullname)}', '#{session[:uname]}', '#{params[:email]}', 0, #{params[:volume].to_i}, #{session[:sex]}, '#{session[:acctoken]}', '#{session[:reftoken]}', '#{db.escape(session[:city])}', '#{db.escape(session[:state])}', '#{db.escape(session[:country])}')")
+        fullname="#{params[:fname]} #{params[:lname]}" || ''
+        city = session[:city] || ''
+        state = session[:state] || ''
+        country = session[:country] || ''
+        uname = session[:uname] || ''
+        p("REPLACE INTO runners VALUES (#{session[:sid]},'#{db.escape(fullname)}', '#{db.escape(uname)}', '#{params[:email]}', 0, #{params[:volume].to_i}, #{session[:sex]}, '#{session[:acctoken]}', '#{session[:reftoken]}', '#{db.escape(city)}', '#{db.escape(state)}', '#{db.escape(country)}')")
+        db.query("REPLACE INTO runners VALUES (#{session[:sid]},'#{db.escape(fullname)}', '#{db.escape(uname)}', '#{params[:email]}', 0, #{params[:volume].to_i}, #{session[:sex]}, '#{session[:acctoken]}', '#{session[:reftoken]}', '#{db.escape(city)}', '#{db.escape(state)}', '#{db.escape(country)}')")
 
         d = db.query("SELECT * FROM runners WHERE runnerid=#{session[:sid]}", :as => :array).each[0]
         p "INS/REPL RES: #{d}"

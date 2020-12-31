@@ -77,7 +77,7 @@ if now > PROLOG.begin #and now < 7.days.after(CLOSEPROLOG)
     prolog += "</center>\n"
     prolog += "<div class=\"datagrid\">\n"
     prolog += "<table>\n"
-    prolog += "<thead><tr><th>Имя</th><th>Команда</th><th>Объемы 2019 (км/нед)</th><th>Результат (км)</th></tr></thead>\n"
+    prolog += "<thead><tr><th>Имя</th><th>Команда</th><th>Объемы 2020 (км/нед)</th><th>Результат (км)</th></tr></thead>\n"
     prolog += "<tbody>\n"
     
     teams = db.query("SELECT * FROM teams", :as => :array).to_a
@@ -252,7 +252,7 @@ data += "</center>\n"
 data += "<div class=\"datagrid\">\n"
 data += "<table>\n"
 data += "<tbody>\n"
-data += "<thead><tr><th></th><th>Имя</th><th>Объемы 2020 (км)</th><th>Объемы 2020 (%)</th><th>Объемы 2019 (км)</th><th>Команда</th></tr></thead>\n"
+data += "<thead><tr><th></th><th>Имя</th><th>Объемы 2021 (км)</th><th>Объемы 2021 (%)</th><th>Объемы 2020 (км)</th><th>Команда</th></tr></thead>\n"
 odd = true
 i = 0
 db.query("SELECT runnerid, runnername, teamname, (SELECT COALESCE(SUM(distance),0) FROM log WHERE runnerid=r.runnerid) d, (SELECT goal FROM runners WHERE runnerid=r.runnerid) g, 100*(SELECT COALESCE(SUM(distance),0) FROM log WHERE runnerid=r.runnerid)/(SELECT goal FROM runners WHERE runnerid=r.runnerid) FROM runners r JOIN teams USING (teamid) ORDER BY d DESC", :as => :array).each do |r|
@@ -286,7 +286,7 @@ data += "</center>\n"
 data += "<div class=\"datagrid\">\n"
 data += "<table>\n"
 data += "<tbody>\n"
-data += "<thead><tr><th></th><th>Имя</th><th>Объемы 2020 (%)</th><th>Объемы 2020 (км)</th><th>Объемы 2019 (км)</th><th>Команда</th></tr></thead>\n"
+data += "<thead><tr><th></th><th>Имя</th><th>Объемы 2021 (%)</th><th>Объемы 2021 (км)</th><th>Объемы 2020 (км)</th><th>Команда</th></tr></thead>\n"
 odd = true
 i = 0
 db.query("SELECT runnerid, runnername, teamname, (SELECT COALESCE(SUM(distance),0) FROM log WHERE runnerid=r.runnerid) d, (SELECT goal FROM runners WHERE runnerid=r.runnerid) g, 100*(SELECT COALESCE(SUM(distance),0) FROM log WHERE runnerid=r.runnerid)/(SELECT goal FROM runners WHERE runnerid=r.runnerid) p FROM runners r JOIN teams USING (teamid) ORDER BY p DESC", :as => :array).each do |r|
@@ -315,12 +315,12 @@ File.open("html/users2.html", 'w') { |f| f.write(users2_erb.result(binding)) }
 ### Process users3.html
 data = ""
 data += "<center>\n"
-data += "<h1>По результатам 2019 года</h1>\n"
+data += "<h1>По результатам 2020 года</h1>\n"
 data += "</center>\n"
 data += "<div class=\"datagrid\">\n"
 data += "<table>\n"
 data += "<tbody>\n"
-data += "<thead><tr><th></th><th>Имя</th><th>Объемы 2019 (км)</th><th>Объемы 2020 (км)</th><th>Объемы 2020 (%)</th><th>Команда</th></tr></thead>\n"
+data += "<thead><tr><th></th><th>Имя</th><th>Объемы 2020 (км)</th><th>Объемы 2021 (км)</th><th>Объемы 2021 (%)</th><th>Команда</th></tr></thead>\n"
 odd = true
 i = 0
 db.query("SELECT runnerid, runnername, teamname, (SELECT COALESCE(SUM(distance),0) FROM log WHERE runnerid=r.runnerid) d, (SELECT goal FROM runners WHERE runnerid=r.runnerid) g, 100*(SELECT COALESCE(SUM(distance),0) FROM log WHERE runnerid=r.runnerid)/(SELECT goal FROM runners WHERE runnerid=r.runnerid) p FROM runners r JOIN teams USING (teamid) ORDER BY g DESC", :as => :array).each do |r|
@@ -358,7 +358,7 @@ db.query("SELECT * FROM teams ORDER BY teamid", :as => :array).each do |t|
     data += "<div class=\"datagrid\">\n"
     data += "<table>\n"
     data += "<tbody>\n"
-    data += "<thead><tr><th></th><th>Имя</th><th>Объемы 2019 (км/год)</th><th>Примечания</th></tr></thead>\n"
+    data += "<thead><tr><th></th><th>Имя</th><th>Объемы 2020 (км/год)</th><th>Примечания</th></tr></thead>\n"
     odd = true
     i = 0
     db.query("SELECT * FROM runners WHERE teamid=#{t[0]} ORDER BY goal DESC", :as => :array).each do |r|
@@ -390,8 +390,8 @@ File.open("html/users4.html", 'w') { |f| f.write(users4_erb.result(binding)) }
 [*CHAMP.begin.to_date.cweek..(Date.today.cweek)].reverse_each do |w|
      puts "teams#{w}...."
      p w
-     bow = DateTime.parse(Date.commercial(2020,w).to_s).beginning_of_week
-     eow = DateTime.parse(Date.commercial(2020,w).to_s).end_of_week
+     bow = DateTime.parse(Date.commercial(2021,w).to_s).beginning_of_week
+     eow = DateTime.parse(Date.commercial(2021,w).to_s).end_of_week
      p bow.to_s(:db), eow.to_s(:db)
      teams = db.query("SELECT * FROM teams", :as => :array).to_a
      data = ""
@@ -449,8 +449,8 @@ begin
 w = 52
 puts "statistics#{w}...."
      p w
-     bow = DateTime.parse(Date.commercial(2020,w).to_s).beginning_of_week
-     eow = DateTime.parse(Date.commercial(2020,w).to_s).end_of_week
+     bow = DateTime.parse(Date.commercial(2021,w).to_s).beginning_of_week
+     eow = DateTime.parse(Date.commercial(2021,w).to_s).end_of_week
      p bow.to_s(:db), eow.to_s(:db)
      data = ""
      data +=   "<center>\n"
@@ -693,8 +693,8 @@ end
 [*CHAMP.begin.to_date.cweek..(Date.today.cweek)].reverse_each do |w|
      puts "feed#{w}...."
      p w
-     bow = DateTime.parse(Date.commercial(2020,w).to_s).beginning_of_week
-     eow = DateTime.parse(Date.commercial(2020,w).to_s).end_of_week
+     bow = DateTime.parse(Date.commercial(2021,w).to_s).beginning_of_week
+     eow = DateTime.parse(Date.commercial(2021,w).to_s).end_of_week
      p bow.to_s(:db), eow.to_s(:db)
      data = ""
      data +=   "<center>\n"
