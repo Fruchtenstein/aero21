@@ -11,8 +11,8 @@ def printweek (w)
     teams = db.query("SELECT teams.teamid, points, pcts, teamname  FROM points,teams WHERE points.teamid=teams.teamid AND week=#{w} ORDER BY points DESC", :as => :array).to_a
     output +=   "<center>\n"
     output +=   "    <br />\n"
-    p "printweek: #{w}; #{Date.today.cweek}; #{Date.today.wday}; #{DOW}\n"
-    if w==Date.today.cweek or (w==Date.today.cweek-1 and Date.today.wday.between?(1, DOW-1))
+    p "printweek: #{w}; #{Date.today.strftime('%W').to_i}; #{Date.today.wday}; #{DOW}\n"
+    if w==Date.today.strftime('%W').to_i or (w==Date.today.strftime('%W').to_i-1 and Date.today.wday.between?(1, DOW-1))
         output +=   "    <h1>Предварительные результаты #{w} недели</h1>\n"
     else
         output +=   "    <h1>Результаты #{w} недели</h1>\n"
@@ -50,7 +50,7 @@ if now < PROLOG.begin or now > (CHAMP.end + 2.days)
     exit
 end
 
-week = now.to_date.cweek.to_i
+week = now.to_date.strftime('%W').to_i
 
 prolog = ""
 champ = ""
@@ -113,7 +113,7 @@ if now > PROLOG.begin #and now < 7.days.after(CLOSEPROLOG)
 end
 
 if now > CHAMP.begin
-    w = Date.today.cweek
+    w = Date.today.strftime('%W').to_i
     p w
     if Date.today.wday.between?(1, DOW-1)
         teams = db.query("SELECT teams.teamid, teamname, COALESCE(SUM(points),0) AS p FROM points, teams WHERE points.teamid=teams.teamid AND week<#{w-1} GROUP BY teams.teamid ORDER BY p DESC", :as => :array).to_a
@@ -143,15 +143,15 @@ if now > CHAMP.begin
     champ +=   "<br />\n"
     champ += printweek w
     champ +=   "<br />\n"
-    [*CHAMP.begin.to_date.cweek..(Date.today.cweek-1)].reverse_each do |w|
+    [*CHAMP.begin.to_date.strftime('%W').to_i..(Date.today.strftime('%W').to_i-1)].reverse_each do |w|
          p w
          champ += printweek w
     end
 end
 
 if now > CUP.begin
-  w = Date.today.cweek.to_i
-  start_cup_week = CUP.begin.to_date.cweek.to_i
+  w = Date.today.strftime('%W').to_i
+  start_cup_week = CUP.begin.to_date.strftime('%W').to_i
   final_week = start_cup_week + 8
   half_week = start_cup_week + 4
   cup_week = w - start_cup_week + 1
@@ -387,11 +387,17 @@ end
 File.open("html/users4.html", 'w') { |f| f.write(users4_erb.result(binding)) }
 
 ### Process teams*.html
-[*CHAMP.begin.to_date.cweek..(Date.today.cweek)].reverse_each do |w|
+if now > CHAMP.begin
+[*CHAMP.begin.to_date.strftime('%W').to_i..(Date.today.strftime('%W').to_i)].reverse_each do |w|
      puts "teams#{w}...."
      p w
-     bow = DateTime.parse(Date.commercial(2021,w).to_s).beginning_of_week
-     eow = DateTime.parse(Date.commercial(2021,w).to_s).end_of_week
+     if w == 53
+         bow = PROLOG.begin
+         eow = PROLOG.begin.end_of_week
+     else
+         bow = DateTime.parse(Date.commercial(2021,w).to_s).beginning_of_week
+         eow = DateTime.parse(Date.commercial(2021,w).to_s).end_of_week
+     end
      p bow.to_s(:db), eow.to_s(:db)
      teams = db.query("SELECT * FROM teams", :as => :array).to_a
      data = ""
@@ -431,7 +437,7 @@ File.open("html/users4.html", 'w') { |f| f.write(users4_erb.result(binding)) }
      end
      box  = "<nav class=\"sub\">\n"
      box += "      <ul>\n"
-     (CHAMP.begin.to_date.cweek..Date.today.cweek).each do |wk|
+     (CHAMP.begin.to_date.strftime('%W').to_i..Date.today.strftime('%W').to_i).each do |wk|
          if wk == w
              box += "        <li class=\"active\"><span>#{wk} неделя</span></li>\n"
          else
@@ -442,15 +448,20 @@ File.open("html/users4.html", 'w') { |f| f.write(users4_erb.result(binding)) }
      box += "    </nav>\n"
      File.open("html/teams#{w}.html", 'w') { |f| f.write(teams_erb.result(binding)) }
 end
-
+end
 ### Process statistics*.html
-#[*CHAMP.begin.to_date.cweek..(Date.today.cweek)].reverse_each do |w|
+#if Date.today > CHAMP.begin
+[*CHAMP.begin.to_date.strftime('%W').to_i..(Date.today.strftime('%W').to_i)].reverse_each do |w|
 begin
-w = 52
 puts "statistics#{w}...."
      p w
-     bow = DateTime.parse(Date.commercial(2021,w).to_s).beginning_of_week
-     eow = DateTime.parse(Date.commercial(2021,w).to_s).end_of_week
+     if w == 0
+         bow = PROLOG.begin
+         eow = PROLOG.begin.end_of_week
+     else
+         bow = DateTime.parse(Date.commercial(2021,w).to_s).beginning_of_week
+         eow = DateTime.parse(Date.commercial(2021,w).to_s).end_of_week
+     end
      p bow.to_s(:db), eow.to_s(:db)
      data = ""
      data +=   "<center>\n"
@@ -677,7 +688,7 @@ puts "statistics#{w}...."
 
      box  = "<nav class=\"sub\">\n"
      box += "      <ul>\n"
-     (CHAMP.begin.to_date.cweek..Date.today.cweek).each do |wk|
+     (CHAMP.begin.to_date.strftime('%W').to_i..Date.today.strftime('%W').to_i).each do |wk|
          if wk == w
              box += "        <li class=\"active\"><span>#{wk} неделя</span></li>\n"
          else
@@ -688,20 +699,26 @@ puts "statistics#{w}...."
      box += "    </nav>\n"
      File.open("html/statistics#{w}.html", 'w') { |f| f.write(statistics_erb.result(binding)) }
 end
-
+end
+#end
 ### Process feed*.html
-[*CHAMP.begin.to_date.cweek..(Date.today.cweek)].reverse_each do |w|
+[*PROLOG.begin.to_date.strftime('%W').to_i..(Date.today.strftime('%W').to_i)].reverse_each do |w|
      puts "feed#{w}...."
      p w
-     bow = DateTime.parse(Date.commercial(2021,w).to_s).beginning_of_week
-     eow = DateTime.parse(Date.commercial(2021,w).to_s).end_of_week
+     if w == 0
+         bow = PROLOG.begin
+         eow = PROLOG.begin.end_of_week
+     else
+         bow = DateTime.parse(Date.commercial(2021,w).to_s).beginning_of_week
+         eow = DateTime.parse(Date.commercial(2021,w).to_s).end_of_week
+     end
      p bow.to_s(:db), eow.to_s(:db)
      data = ""
-     data +=   "<center>\n"
-     data +=   "    <br />\n"
-     data +=   "    <br />\n"
-     data +=   "    <h1>Тренировки недели</h1>\n"
-     data +=   "</center>\n"
+#     data +=   "<center>\n"
+#     data +=   "    <br />\n"
+#     data +=   "    <br />\n"
+#     data +=   "    <h1>Тренировки недели</h1>\n"
+#     data +=   "</center>\n"
      data +=   "<div class=\"datagrid\"><table>\n"
      data +=   "   <thead><tr><th>Тренировки недели</th></tr></thead>\n"
      data +=   "    <tbody>\n"
@@ -756,7 +773,7 @@ end
 
      box  = "<nav class=\"sub\">\n"
      box += "      <ul>\n"
-     (CHAMP.begin.to_date.cweek..Date.today.cweek).each do |wk|
+     (CHAMP.begin.to_date.strftime('%W').to_i..Date.today.strftime('%W').to_i).each do |wk|
          if wk == w
              box += "        <li class=\"active\"><span>#{wk} неделя</span></li>\n"
          else
