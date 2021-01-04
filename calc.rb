@@ -6,7 +6,7 @@ require 'pp'
 require_relative './config.rb'
 
 def calcweek (now)
-    week_number = now.to_date.cweek.to_i
+    week_number = now.to_date.strftime('%W').to_i
     db = Mysql2::Client.new(:host => "localhost", :username => DBUSER, :password => DBPASSWD, :database => DB, :encoding => "utf8mb4")
     teams = []
     (1..TEAMS).each do |t|
@@ -32,7 +32,7 @@ def calcweek (now)
 end
 
 def calcwlog(d)
-    week_number = d.to_date.cweek.to_i
+    week_number = d.to_date.strftime('%W').to_i
     bow = d.beginning_of_week.to_s(:db)
     eow = d.end_of_week.to_s(:db)
     teamdist = Hash.new(0)
@@ -60,7 +60,7 @@ def calcwlog(d)
 end
 
 def calcwonders(d)
-    week_number = d.to_date.cweek.to_i
+    week_number = d.to_date.strftime('%W').to_i
 #    bow = d.beginning_of_week.iso8601
 #    eow = d.end_of_week.iso8601
     bow = d.beginning_of_week.to_s(:db)
@@ -119,7 +119,7 @@ def calcwonders(d)
 end
 
 def calcpoints (d)
-    week_number = d.to_date.cweek.to_i
+    week_number = d.to_date.strftime('%W').to_i
     bow = d.beginning_of_week.to_s(:db)
     eow = d.end_of_week.to_s(:db)
     db = Mysql2::Client.new(:host => "localhost", :username => DBUSER, :password => DBPASSWD, :database => DB, :encoding => "utf8mb4")
