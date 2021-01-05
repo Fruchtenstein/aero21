@@ -387,11 +387,11 @@ end
 File.open("html/users4.html", 'w') { |f| f.write(users4_erb.result(binding)) }
 
 ### Process teams*.html
-if now > CHAMP.begin
-[*CHAMP.begin.to_date.strftime('%W').to_i..(Date.today.strftime('%W').to_i)].reverse_each do |w|
+if now > PROLOG.begin
+[*PROLOG.begin.to_date.strftime('%W').to_i..(Date.today.strftime('%W').to_i)].reverse_each do |w|
      puts "teams#{w}...."
      p w
-     if w == 53
+     if w == 0
          bow = PROLOG.begin
          eow = PROLOG.begin.end_of_week
      else
@@ -451,7 +451,7 @@ end
 end
 ### Process statistics*.html
 #if Date.today > CHAMP.begin
-[*CHAMP.begin.to_date.strftime('%W').to_i..(Date.today.strftime('%W').to_i)].reverse_each do |w|
+[*PROLOG.begin.to_date.strftime('%W').to_i..(Date.today.strftime('%W').to_i)].reverse_each do |w|
 begin
 puts "statistics#{w}...."
      p w
@@ -473,143 +473,30 @@ puts "statistics#{w}...."
      data +=   "   <thead><tr><th></th><th>Имя</th><th>Команда</th><th>Результат (км)</th></tr></thead>\n"
      data +=   "    <tbody>\n"
 
-#     x = db.query("SELECT l.runnerid, runnername, MAX(d), teamname FROM \
-#                         (SELECT runnerid, SUM(distance) d FROM log \
-#                                WHERE date>'#{bow.iso8601}' AND date<'#{eow.iso8601}' GROUP BY runnerid) l, runners, teams \
-#                                    WHERE runners.runnerid=l.runnerid AND sex=1 AND teams.teamid=runners.teamid")[0]
-#     p x
-#     x[0] = x[0] || 0
-#     x[1] = x[1] || ''
-#     x[2] = x[2] || 0
-#     x[3] = x[3] || ''
      x = db.query("SELECT wonders.runnerid, runnername, wonder, teamname FROM wonders, runners, teams WHERE wonders.runnerid=runners.runnerid AND wonders.teamid=teams.teamid AND week=#{w} AND type='mlw'", :as => :array).to_a[0] || [0,'',0,'']
      data +=   "    <tr><td>Больше всех километров среди мужчин</td><td><a href='http://aerobia.net/u#{x[0]}.html'>#{x[1]}</a></td><td>#{x[3]}</td><td>#{x[2]}</td></tr>\n"
 
-#     x = db.query("SELECT l.runnerid, runnername, MAX(d), teamname FROM \
-#                         (SELECT runnerid, SUM(distance) d FROM log \
-#                                WHERE date>'#{bow.iso8601}' AND date<'#{eow.iso8601}' GROUP BY runnerid) l, runners, teams \
-#                                    WHERE runners.runnerid=l.runnerid AND sex=0 AND teams.teamid=runners.teamid")[0]
-#     p x
-#     x[0] = x[0] || 0
-#     x[1] = x[1] || ''
-#     x[2] = x[2] || 0
-#     x[3] = x[3] || ''
      x = db.query("SELECT wonders.runnerid, runnername, wonder, teamname FROM wonders, runners, teams WHERE wonders.runnerid=runners.runnerid AND wonders.teamid=teams.teamid AND week=#{w} AND type='flw'", :as => :array).to_a[0] || [0,'',0,'']
      data +=   "    <tr class='alt'><td>Больше всех километров среди женщин</td><td><a href='http://aerobia.net/u#{x[0]}.html'>#{x[1]}</a></td><td>#{x[3]}</td><td>#{x[2]}</td></tr>\n"
 
-#     x = db.query("SELECT log.runnerid, runnername, MAX(distance), runid, teamname FROM log, runners, teams WHERE date>'#{bow.iso8601}' AND date<'#{eow.iso8601}' AND runners.runnerid=log.runnerid AND sex=1 AND teams.teamid=runners.teamid", :as => :array)[0]
-#     p x
-#     x[0] = x[0] || 0
-#     x[1] = x[1] || ''
-#     x[2] = x[2] || 0
-#     x[3] = x[3] || 0
-#     x[4] = x[4] || ''
      x = db.query("SELECT wonders.runnerid, runnername, wonder, teamname FROM wonders, runners, teams WHERE wonders.runnerid=runners.runnerid AND wonders.teamid=teams.teamid AND week=#{w} AND type='mlr'", :as => :array).to_a[0] || [0,'',0,'']
      data +=   "    <tr><td>Самая длинная тренировка у мужчин</td><td><a href='http://aerobia.net/u#{x[0]}.html'>#{x[1]}</a></td><td>#{x[3]}</td><td>#{x[2]}</td></tr>\n"
 
-#     x = db.query("SELECT log.runnerid, runnername, MAX(distance), runid, teamname FROM log, runners, teams WHERE date>'#{bow.iso8601}' AND date<'#{eow.iso8601}' AND runners.runnerid=log.runnerid AND sex=0 AND teams.teamid=runners.teamid", :as => :array)[0]
-#     p x
-#     x[0] = x[0] || 0
-#     x[1] = x[1] || ''
-#     x[2] = x[2] || 0
-#     x[3] = x[3] || 0
-#     x[4] = x[4] || ''
      x = db.query("SELECT wonders.runnerid, runnername, wonder, teamname FROM wonders, runners, teams WHERE wonders.runnerid=runners.runnerid AND wonders.teamid=teams.teamid AND week=#{w} AND type='flr'", :as => :array).to_a[0] || [0,'',0,'']
      data +=   "    <tr class='alt'><td>Самая длинная тренировка у женщин</td><td><a href='http://aerobia.net/u#{x[0]}.html'>#{x[1]}</a></td><td>#{x[3]}</td><td>#{x[2]}</td></tr>\n"
 
-#     x = db.query("SELECT log.runnerid, runnername, strftime('%H:%M:%S',MAX(time),'unixepoch'), runid, teamname FROM log, runners, teams WHERE date>'#{bow.iso8601}' AND date<'#{eow.iso8601}' AND runners.runnerid=log.runnerid AND teams.teamid=runners.teamid", :as => :array)[0]
-#     p x
-#     x[0] = x[0] || 0
-#     x[1] = x[1] || ''
-#     x[2] = x[2] || 0
-#     x[3] = x[3] || 0
-#     x[4] = x[4] || ''
-#     data +=   "    <tr><td>Самая продолжительная тренировка</td><td><a href='http://aerobia.net/u#{x[0]}.html'>#{x[1]}</a></td><td>#{x[4]}</td><td><a href='http://strava.com/activities/#{x[3]}'>#{x[2]}</a></td></tr>\n"
-#
-#     x = db.query("SELECT log.runnerid, runnername, strftime('%H:%M:%S',MAX(time),'unixepoch'), runid, teamname FROM log, runners, teams WHERE date>'#{bow.iso8601}' AND date<'#{eow.iso8601}' AND runners.runnerid=log.runnerid AND sex=0 AND teams.teamid=runners.teamid", :as => :array)[0]
-#     p x
-#     x[0] = x[0] || 0
-#     x[1] = x[1] || ''
-#     x[2] = x[2] || 0
-#     x[3] = x[3] || 0
-#     x[4] = x[4] || ''
-#     data +=   "    <tr class='alt'><td>Самая продолжительная тренировка у женщин</td><td><a href='http://aerobia.net/u#{x[0]}.html'>#{x[1]}</a></td><td>#{x[4]}</td><td><a href='http://strava.com/activities/#{x[3]}'>#{x[2]}</a></td></tr>\n"
-
-#     x = db.query("SELECT log.runnerid, runnername, strftime('%M:%S',MIN(time/distance),'unixepoch'), runid, distance, teamname FROM log, runners, teams WHERE log.runnerid=runners.runnerid AND date>'#{bow.iso8601}' AND date<'#{eow.iso8601}' AND sex=1 AND teams.teamid=runners.teamid AND time>0", :as => :array)[0]
-#     p x
-#     x[0] = x[0] || 0
-#     x[1] = x[1] || ''
-#     x[2] = x[2] || 0
-#     x[3] = x[3] || 0
-#     x[4] = x[4] || 0
-#     x[5] = x[5] || ''
      x = db.query("SELECT wonders.runnerid, runnername, wonder, teamname FROM wonders, runners, teams WHERE wonders.runnerid=runners.runnerid AND wonders.teamid=teams.teamid AND week=#{w} AND type='mfr'", :as => :array).to_a[0] || [0,'',0,'']
      data +=   "    <tr><td>Самая быстрая тренировка у мужчин</td><td><a href='http://aerobia.net/u#{x[0]}.html'>#{x[1]}</a></td><td>#{x[3]}</td><td>#{x[2]}</td></tr>\n"
 
-#     x = db.query("SELECT log.runnerid, runnername, strftime('%M:%S',MIN(time/distance),'unixepoch'), runid, distance, teamname FROM log, runners, teams WHERE log.runnerid=runners.runnerid AND date>'#{bow.iso8601}' AND date<'#{eow.iso8601}' AND sex=0 AND teams.teamid=runners.teamid AND time>0", :as => :array)[0]
-#     p x
-#     x[0] = x[0] || 0
-#     x[1] = x[1] || ''
-#     x[2] = x[2] || 0
-#     x[3] = x[3] || 0
-#     x[4] = x[4] || 0
-#     x[5] = x[5] || ''
      x = db.query("SELECT wonders.runnerid, runnername, wonder, teamname FROM wonders, runners, teams WHERE wonders.runnerid=runners.runnerid AND wonders.teamid=teams.teamid AND week=#{w} AND type='ffr'", :as => :array).to_a[0] || [0,'',0,'']
      data +=   "    <tr class='alt'><td>Самая быстрая тренировка у женщин</td><td><a href='http://aerobia.net/u#{x[0]}.html'>#{x[1]}</a></td><td>#{x[3]}</td><td>#{x[2]}</td></tr>\n"
 
-#     x = db.query("SELECT l.runnerid, runnername, strftime('%M:%S',MIN(t/d),'unixepoch'), teamname FROM (SELECT runnerid, SUM(time) t, SUM(distance) d FROM log WHERE date>'#{bow.iso8601}' AND date<'#{eow.iso8601}' AND time>0 GROUP BY runnerid) l, runners, teams WHERE runners.runnerid=l.runnerid AND sex=1 AND teams.teamid=runners.teamid", :as => :array)[0]
-#     p x
-#     x[0] = x[0] || 0
-#     x[1] = x[1] || ''
-#     x[2] = x[2] || 0
-#     x[3] = x[3] || ''
      x = db.query("SELECT wonders.runnerid, runnername, wonder, teamname FROM wonders, runners, teams WHERE wonders.runnerid=runners.runnerid AND wonders.teamid=teams.teamid AND week=#{w} AND type='mfw'", :as => :array).to_a[0] || [0,'',0,'']
      data +=   "    <tr><td>Самый быстрый средний темп у мужчин</td><td><a href='http://aerobia.net/u#{x[0]}.html'>#{x[1]}</a></td><td>#{x[3]}</td><td>#{x[2]}</td></tr>\n"
 
-#     x = db.query("SELECT l.runnerid, runnername, strftime('%M:%S',MIN(t/d),'unixepoch'), teamname FROM (SELECT runnerid, SUM(time) t, SUM(distance) d FROM log WHERE date>'#{bow.iso8601}' AND date<'#{eow.iso8601}' AND time>0 GROUP BY runnerid) l, runners, teams WHERE runners.runnerid=l.runnerid AND sex=0 AND teams.teamid=runners.teamid", :as => :array)[0]
-#     p x
-#     x[0] = x[0] || 0
-#     x[1] = x[1] || ''
-#     x[2] = x[2] || 0
-#     x[3] = x[3] || ''
      x = db.query("SELECT wonders.runnerid, runnername, wonder, teamname FROM wonders, runners, teams WHERE wonders.runnerid=runners.runnerid AND wonders.teamid=teams.teamid AND week=#{w} AND type='ffw'", :as => :array).to_a[0] || [0,'',0,'']
      data +=   "    <tr class='alt'><td>Самый быстрый средний темп у женщин</td><td><a href='http://aerobia.net/u#{x[0]}.html'>#{x[1]}</a></td><td>#{x[3]}</td><td>#{x[2]}</td></tr>\n"
 
-#     x = db.query("SELECT log.runnerid, runnername, strftime('%M:%S',MAX(time/distance),'unixepoch'), runid, distance, teamname FROM log, runners, teams WHERE log.runnerid=runners.runnerid AND date>'#{bow.iso8601}' AND date<'#{eow.iso8601}' AND teams.teamid=runners.teamid AND time>0", :as => :array)[0]
-#     p x
-#     x[0] = x[0] || 0
-#     x[1] = x[1] || ''
-#     x[2] = x[2] || 0
-#     x[3] = x[3] || 0
-#     x[4] = x[4] || 0
-#     x[5] = x[5] || ''
-#     data +=   "    <tr><td>Самая медленная тренировка</td><td><a href='http://aerobia.net/u#{x[0]}.html'>#{x[1]}</a></td><td>#{x[5]}</td><td><a href='http://strava.com/activities/#{x[3]}'>#{x[2]} мин/км (#{x[4].round(2)} км)</a></td></tr>\n"
-#
-#     x = db.query("SELECT log.runnerid, runnername, strftime('%M:%S',MAX(time/distance),'unixepoch'), runid, distance, teamname FROM log, runners, teams WHERE log.runnerid=runners.runnerid AND date>'#{bow.iso8601}' AND date<'#{eow.iso8601}' AND sex=0 AND teams.teamid=runners.teamid AND time>0", :as => :array)[0]
-#     p x
-#     x[0] = x[0] || 0
-#     x[1] = x[1] || ''
-#     x[2] = x[2] || 0
-#     x[3] = x[3] || 0
-#     x[4] = x[4] || 0
-#     x[5] = x[5] || ''
-#     data +=   "    <tr class='alt'><td>Самая медленная тренировка у женщин</td><td><a href='http://aerobia.net/u#{x[0]}.html'>#{x[1]}</a></td><td>#{x[5]}</td><td><a href='http://strava.com/activities/#{x[3]}'>#{x[2]} мин/км (#{x[4].round(2)} км)</a></td></tr>\n"
-#
-#     x = db.query("SELECT l.runnerid, runnername, strftime('%M:%S',MAX(t/d),'unixepoch'), teamname FROM (SELECT runnerid, SUM(time) t, SUM(distance) d FROM log WHERE date>'#{bow.iso8601}' AND date<'#{eow.iso8601}' AND time>0 GROUP BY runnerid) l, runners, teams WHERE runners.runnerid=l.runnerid AND teams.teamid=runners.teamid", :as => :array)[0]
-#     p x
-#     x[0] = x[0] || 0
-#     x[1] = x[1] || ''
-#     x[2] = x[2] || 0
-#     x[3] = x[3] || ''
-#     data +=   "    <tr><td>Самый медленный средний темп</td><td><a href='http://aerobia.net/u#{x[0]}.html'>#{x[1]}</a></td><td>#{x[3]}</td><td>#{x[2]} мин/км</td></tr>\n"
-#
-#     x = db.query("SELECT l.runnerid, runnername, strftime('%M:%S',MAX(t/d),'unixepoch'), teamname FROM (SELECT runnerid, SUM(time) t, SUM(distance) d FROM log WHERE date>'#{bow.iso8601}' AND date<'#{eow.iso8601}' AND time>0 GROUP BY runnerid) l, runners, teams WHERE runners.runnerid=l.runnerid AND sex=0 AND teams.teamid=runners.teamid", :as => :array)[0]
-#     p x
-#     x[0] = x[0] || 0
-#     x[1] = x[1] || ''
-#     x[2] = x[2] || 0
-#     x[3] = x[3] || ''
-#     data +=   "    <tr class='alt'><td>Самый медленный средний темп у женщин</td><td><a href='http://aerobia.net/u#{x[0]}.html'>#{x[1]}</a></td><td>#{x[3]}</td><td>#{x[2]} мин/км</td></tr>\n"
      x = db.query("SELECT l.runnerid, runnername, d, teamname FROM \
                         (SELECT runnerid, 100*SUM(distance)/(SELECT 7*goal/365 FROM runners WHERE runnerid=log.runnerid) d \
                                 FROM log WHERE date>'#{bow.to_s(:db)}' AND date<'#{eow.to_s(:db)}' GROUP BY runnerid) l, runners, teams \
@@ -704,7 +591,6 @@ end
 ### Process feed*.html
 [*PROLOG.begin.to_date.strftime('%W').to_i..(Date.today.strftime('%W').to_i)].reverse_each do |w|
      puts "feed#{w}...."
-     p w
      if w == 0
          bow = PROLOG.begin
          eow = PROLOG.begin.end_of_week
