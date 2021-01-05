@@ -6,6 +6,7 @@ require 'pp'
 require_relative './config.rb'
 
 def calcweek (now)
+    puts ">> calcweek #{now}"
     week_number = now.to_date.strftime('%W').to_i
     db = Mysql2::Client.new(:host => "localhost", :username => DBUSER, :password => DBPASSWD, :database => DB, :encoding => "utf8mb4")
     teams = []
@@ -32,8 +33,14 @@ def calcweek (now)
 end
 
 def calcwlog(d)
+    puts ">> calcwlog #{d}"
+    if d.year != Time.now.year
+        d = Time.new(2021, 1, 1)
+        bow = d.to_s(:db)
+    else
+        bow = d.beginning_of_week.to_s(:db)
+    end
     week_number = d.to_date.strftime('%W').to_i
-    bow = d.beginning_of_week.to_s(:db)
     eow = d.end_of_week.to_s(:db)
     teamdist = Hash.new(0)
     teamtime = Hash.new(0)
@@ -60,10 +67,14 @@ def calcwlog(d)
 end
 
 def calcwonders(d)
+    puts ">> calcwonders #{d}"
+    if d.year != Time.now.year
+        d = Time.new(2021, 1, 1)
+        bow = d.to_s(:db)
+    else
+        bow = d.beginning_of_week.to_s(:db)
+    end
     week_number = d.to_date.strftime('%W').to_i
-#    bow = d.beginning_of_week.iso8601
-#    eow = d.end_of_week.iso8601
-    bow = d.beginning_of_week.to_s(:db)
     eow = d.end_of_week.to_s(:db)
     db = Mysql2::Client.new(:host => "localhost", :username => DBUSER, :password => DBPASSWD, :database => DB, :encoding => "utf8mb4")
     # best boy in week mileage
@@ -119,8 +130,14 @@ def calcwonders(d)
 end
 
 def calcpoints (d)
+    puts ">> calcpoints #{d}"
+    if d.year != Time.now.year
+        d = Time.new(2021, 1, 1)
+        bow = d.to_s(:db)
+    else
+        bow = d.beginning_of_week.to_s(:db)
+    end
     week_number = d.to_date.strftime('%W').to_i
-    bow = d.beginning_of_week.to_s(:db)
     eow = d.end_of_week.to_s(:db)
     db = Mysql2::Client.new(:host => "localhost", :username => DBUSER, :password => DBPASSWD, :database => DB, :encoding => "utf8mb4")
     place = 0
@@ -158,12 +175,12 @@ if now < PROLOG.begin or now > (CHAMP.end + 2.days)
 end
 
 if now >= PROLOG.begin and now <= (PROLOG.end + 2.days)
-  if now.wday.between?(1, DOW-1) and 1.week.ago.getutc.beginning_of_week >= PROLOG.begin
+  if now.wday.between?(1, DOW-1) #and 1.week.ago.getutc.beginning_of_week >= PROLOG.begin
     calcwlog(1.week.ago)
-#    calcwonders(1.week.ago)
+    calcwonders(1.week.ago)
   end
   calcwlog(now)
-#  calcwonders(now)
+  calcwonders(now)
 end
 
 if now >= CHAMP.begin and now <= (CHAMP.end + 2.days)

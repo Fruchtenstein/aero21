@@ -437,7 +437,7 @@ if now > PROLOG.begin
      end
      box  = "<nav class=\"sub\">\n"
      box += "      <ul>\n"
-     (CHAMP.begin.to_date.strftime('%W').to_i..Date.today.strftime('%W').to_i).each do |wk|
+     (PROLOG.begin.to_date.strftime('%W').to_i..Date.today.strftime('%W').to_i).each do |wk|
          if wk == w
              box += "        <li class=\"active\"><span>#{wk} неделя</span></li>\n"
          else
@@ -562,9 +562,9 @@ puts "statistics#{w}...."
      odd = false
      x.each do |r|
        if odd
-         data += "  <tr><td>#{r[0]}</td><td>#{r[1]}</td><td>#{r[2]*2}</td></tr>\n"
+         data += "  <tr><td>#{r[0]}</td><td>#{r[1]}</td><td>#{r[2]*3}</td></tr>\n"
        else
-         data += "  <tr class=\"alt\"><td>#{r[0]}</td><td>#{r[1]}</td><td>#{r[2]*2}</td></tr>\n"
+         data += "  <tr class=\"alt\"><td>#{r[0]}</td><td>#{r[1]}</td><td>#{r[2]*3}</td></tr>\n"
        end
        odd = !odd
      end
@@ -575,7 +575,7 @@ puts "statistics#{w}...."
 
      box  = "<nav class=\"sub\">\n"
      box += "      <ul>\n"
-     (CHAMP.begin.to_date.strftime('%W').to_i..Date.today.strftime('%W').to_i).each do |wk|
+     (PROLOG.begin.to_date.strftime('%W').to_i..Date.today.strftime('%W').to_i).each do |wk|
          if wk == w
              box += "        <li class=\"active\"><span>#{wk} неделя</span></li>\n"
          else
@@ -659,7 +659,7 @@ end
 
      box  = "<nav class=\"sub\">\n"
      box += "      <ul>\n"
-     (CHAMP.begin.to_date.strftime('%W').to_i..Date.today.strftime('%W').to_i).each do |wk|
+     (PROLOG.begin.to_date.strftime('%W').to_i..Date.today.strftime('%W').to_i).each do |wk|
          if wk == w
              box += "        <li class=\"active\"><span>#{wk} неделя</span></li>\n"
          else
