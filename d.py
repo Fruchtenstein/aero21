@@ -1,13 +1,18 @@
 #!/usr/bin/python, paces3
+# -*- coding: utf8 -*-
 
-import sqlite3
+import mysql.connector
 import datetime
 import pytz
 import os
 from string import Template
 #import config
 import numpy as np
-import sqlite3
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 from matplotlib.lines import Line2D
@@ -20,18 +25,26 @@ now = datetime.date.today()
 week = int(now.strftime("%W")) + 1
 prevweek = week - 1
 dolastweek = now.weekday() < 2
-db = sqlite3.connect('2020.db')
+db = mysql.connector.connect(
+        host="127.0.0.1",
+        database="aero21",
+        user="aero",
+        password="Coby,daig3"
+        )
 c1 = db.cursor()
 
 fig, ax = plt.subplots()
 
 
-weeks = [x[0] for x in c1.execute('SELECT DISTINCT week FROM points ORDER BY week').fetchall()]
-teams = c1.execute('SELECT teamid, teamname FROM teams').fetchall()
+c1.execute('SELECT DISTINCT week FROM points ORDER BY week')
+weeks = [x[0] for x in c1.fetchall()]
+c1.execute('SELECT teamid, teamname FROM teams')
+teams = c1.fetchall()
 fig, ax = plt.subplots()
 for t in teams:
     team = t[1]
-    a = [x[0] for x in c1.execute('SELECT points FROM points WHERE teamid=? ORDER BY week', (t[0],))]
+    c1.execute('SELECT points FROM points WHERE teamid=%s ORDER BY week', (t[0],))
+    a = [x[0] for x in c1.fetchall()]
     print(weeks)
     print(a)
     ax.plot(weeks, np.cumsum(a), label=team)
@@ -49,7 +62,8 @@ if dolastweek:
     weeks.pop()
     for t in teams:
         team = t[1]
-        a = [x[0] for x in c1.execute('SELECT points FROM points WHERE teamid=? ORDER BY week', (t[0],))]
+        c1.execute('SELECT points FROM points WHERE teamid=%s ORDER BY week', (t[0],))
+        a = [x[0] for x in c1.fetchall()]
         a.pop()
         print(weeks)
         print(a)
@@ -63,10 +77,13 @@ if dolastweek:
     plt.savefig('html/cup{}.png'.format(week - 1), bbox_extra_artists=(lgd,), bbox_inches='tight')
     plt.close('all')
   
-runners = c1.execute('SELECT * FROM runners').fetchall()
+c1.execute('SELECT * FROM runners')
+runners = c1.fetchall()
 for r in runners:
-    wlog = c1.execute('SELECT week, COALESCE(time,0), COALESCE(distance,0) FROM wlog WHERE runnerid=?', (r[0],)).fetchall()
-    norm = c1.execute('SELECT goal*7/365 FROM runners WHERE runnerid=?', (r[0],)).fetchall()[0][0]
+    c1.execute('SELECT week, COALESCE(time,0), COALESCE(distance,0) FROM wlog WHERE runnerid=%s', (r[0],))
+    wlog = c1.fetchall()
+    c1.execute('SELECT goal*7/365 FROM runners WHERE runnerid=%s', (r[0],))
+    norm = c1.fetchall()[0][0]
     norm = round(norm, 2)
     paces = [w[1]/w[2] if w[2]>0 else np.nan for w in wlog]
     dists = [w[2] if w[2]>0 else np.nan for w in wlog]
