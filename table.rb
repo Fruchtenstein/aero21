@@ -611,11 +611,11 @@ end
      data +=   "    <tbody>\n"
      odd = true
      p("SELECT date, runnername, distance, time, DATE_FORMAT(SEC_TO_TIME(ROUND(time/distance, 0)), '%i:%s'), \
-                name, start_date_local, timezone, location_city, location_state, location_country \
+                name, start_date_local, timezone, location_city, location_state, location_country, runid \
      FROM log, runners WHERE log.runnerid=runners.runnerid AND date>'#{bow.to_s(:db)}' \
                        AND date<'#{eow.to_s(:db)}' ORDER BY date DESC")
      db.query("SELECT date, runnername, distance, time, DATE_FORMAT(SEC_TO_TIME(ROUND(time/distance, 0)), '%i:%s'), \
-                name, start_date_local, timezone, location_city, location_state, location_country \
+                name, start_date_local, timezone, location_city, location_state, location_country, runid \
      FROM log, runners WHERE log.runnerid=runners.runnerid AND date>'#{bow.to_s(:db)}' \
                        AND date<'#{eow.to_s(:db)}' ORDER BY date DESC", :as => :array).each do |t|
        dist = t[2].round(2)
@@ -645,7 +645,7 @@ end
 #       data += "      <table border='0'><tr><td>#{t[5]}</td></tr></table>\n"
 #       data += "      <table border='0'><tr><td>#{t[8]} #{t[9]} #{t[10]}</td></tr></table>\n"
        data += "       <hr />\n"
-       data += "       <table style='border:0px white'><tr><td width='30%'><h4>#{t[1]}</h4></td><td><h4>#{title}</h4></td></tr></table>" 
+       data += "       <table style='border:0px white'><tr><td width='30%'><h4>#{t[1]}</h4></td><td><a href='https://strava.com/activities/#{t[11]}'><h4>#{title}</h4></a></td></tr></table>" 
        data += "        <table border='0'><tr><td width='30%'><b>Дата:</b></td><td width='30%'><b>Дистанция:</b></td><td><b>Время:</b></td></tr>\n"
        data += "        <tr><td width='30%'>#{dd}</td><td>#{t[2].round(2)} км.</td><td>#{hh}:#{mm}:#{ss}</td></tr></table>\n"
        data += "        <table border='0'><tr><td width='30%'><b>Местное время:</b></td><td width='30%'><b>Место:</b></td><td><b>Темп:</b></td></tr>\n"
