@@ -88,13 +88,17 @@ for r in runners:
     paces = [w[1]/w[2] if w[2]>0 else np.nan for w in wlog]
     dists = [w[2] if w[2]>0 else np.nan for w in wlog]
     cumdists = [w[2] if w[2]>0 else 0 for w in wlog]
+    print(r[0])
     print(r[1])
     print('paces')
     print(paces)
     print('dists')
     print(dists)
     wlog = list(map(list, zip(*wlog)))
-    ticks = list(range(60*int((np.nanmin(paces)//60)-1), 60*int((np.nanmax(paces)//60)+1), 10))
+    if any(not np.isnan(pace) for pace in paces):
+        ticks = list(range(60*int((np.nanmin(paces)//60)-1), 60*int((np.nanmax(paces)//60)+1), 10))
+    else:
+        ticks = list(range(2,10))
     labels = [sec2min(i) for i in ticks]
     fig, ax = plt.subplots()
     ax.set_yticks(ticks)
@@ -109,18 +113,18 @@ for r in runners:
     ax.plot(wlog[0], paces, color = 'blue', label = 'Темп')
 
     ax2 = ax.twinx()
-    ticks2 = list(range(0, 10*int(np.nanmax(dists)+10//10), 10))
+    ticks2 = list(range(0, 10*int(np.nanmax(cumdists)+10//10), 10))
     ax2.set_yticks(ticks2)
     ax2.tick_params(axis='y', labelcolor='red')
 #    ax2.grid(which='minor')
 #    ax2.grid(which='major', color='gray', linewidth=1)
 #    ax2.minorticks_on()
     ax2.plot(wlog[0], dists, color='red', label='Расстояние')
-    ax2.axhline(y = norm, linewidth = 1, color = 'red', linestyle='--') #dashes = (10,10))
+    ax2.axhline(y = norm, linewidth = 1, color = 'red', linestyle='--', label='Норма ({} км)'.format(norm)) #dashes = (10,10))
     lines, labels = ax.get_legend_handles_labels()
     lines2, labels2 = ax2.get_legend_handles_labels()
-    ax2.legend(lines + lines2 + [Line2D([0], [0], color='red', lw=1, linestyle='--')], 
-            labels + labels2 + ['Норма ({} км)'.format(norm)],
+    ax2.legend(lines + lines2, 
+            labels + labels2,
             loc='best')
 
     fig.savefig('html/u{}.png'.format(r[0]))
@@ -131,7 +135,7 @@ for r in runners:
     print(cumdists)
     sumdists = sum(cumdists)
     ax3.plot(wlog[0], np.cumsum(cumdists), color='red', label='Расстояние={} км'.format(round(sum(cumdists)),2))
-    norms = [i*norm for i in range(1, wlog[0][-1] + 1)]
+    norms = [(i+1)*norm for i in range(0, wlog[0][-1] + 1)]
     print('norms')
     print(norms)
 #    ax3.set_yticks(ticks)
@@ -142,7 +146,7 @@ for r in runners:
 #    ax3.invert_yaxis()
     ax3.grid(which = 'major', color = 'gray', linewidth = 1)
     ax3.minorticks_on() 
-    ax3.plot(range(1, wlog[0][-1]+1), norms, color='red', label='Норма={} км'.format(round(norms[-1]),2), lw=1, ls='--')
+    ax3.plot(range(0, wlog[0][-1]+1), norms, color='red', label='Норма={} км'.format(round(norms[-1]),2), lw=1, ls='--')
     ax3.legend()
     fig.savefig('html/w{}.png'.format(r[0]))
     plt.close('all')
