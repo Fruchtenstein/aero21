@@ -229,7 +229,8 @@ runners.each do |r|
     data2 += "<div class=\"datagrid\"><table>\n"
     data2 += "  <thead><tr><th>Неделя</th><th>Результат (км)</th><th>Общее время</th><th>Средний темп</th></tr></thead>\n"
     data2 += "  <tbody>\n"
-    db.query("SELECT runnerid, week, distance, SEC_TO_TIME(ROUND(time,0)), DATE_FORMAT(SEC_TO_TIME(ROUND(time/distance, 0)), '%i:%s') FROM wlog WHERE runnerid=#{r[0]}", :as => :array).each do |wr|
+    db.query("SELECT runnerid, week, distance, DATE_FORMAT(SEC_TO_TIME(ROUND(time,0)), '%H:%i:%s'), DATE_FORMAT(SEC_TO_TIME(ROUND(time/distance, 0)), '%i:%s') FROM wlog WHERE runnerid=#{r[0]}", :as => :array).each do |wr|
+      puts "~~~~~~~~~~~~~~~~~~ #{wr[3].class} #{wr[3]}"
       if odd then
         odd = false
         data2 += "  <tr><td>#{wr[1]}</td><td>#{wr[2].round(2)}</td><td>#{wr[3]}</td><td>#{wr[4]}</td></tr>\n"
