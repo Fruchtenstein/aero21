@@ -501,7 +501,7 @@ puts "statistics#{w}...."
      x = db.query("SELECT l.runnerid, runnername, d, teamname FROM \
                         (SELECT runnerid, 100*SUM(distance)/(SELECT 7*goal/365 FROM runners WHERE runnerid=log.runnerid) d \
                                 FROM log WHERE date>'#{bow.to_s(:db)}' AND date<'#{eow.to_s(:db)}' GROUP BY runnerid) l, runners, teams \
-                                    WHERE runners.runnerid=l.runnerid AND sex=1 AND teams.teamid=runners.teamid ORDER BY d DESC LIMIT 1").to_a[0] || [0,'',0,'']
+                                    WHERE runners.runnerid=l.runnerid AND sex=1 AND teams.teamid=runners.teamid ORDER BY d DESC LIMIT 1", :as => :array).to_a[0] || [0,'',0,'']
      p x
      x[0] = x[0] || 0
      x[1] = x[1] || ''
@@ -512,7 +512,7 @@ puts "statistics#{w}...."
      x = db.query("SELECT l.runnerid, runnername, d, teamname FROM \
                         (SELECT runnerid, 100*SUM(distance)/(SELECT 7*goal/365 FROM runners WHERE runnerid=log.runnerid) d \
                                 FROM log WHERE date>'#{bow.to_s(:db)}' AND date<'#{eow.to_s(:db)}' GROUP BY runnerid) l, runners, teams \
-                                    WHERE runners.runnerid=l.runnerid AND sex=0 AND teams.teamid=runners.teamid ORDER BY d DESC LIMIT 1").to_a[0] || [0,'',0,'']
+                                    WHERE runners.runnerid=l.runnerid AND sex=0 AND teams.teamid=runners.teamid ORDER BY d DESC LIMIT 1", :as => :array).to_a[0] || [0,'',0,'']
      p x
      x[0] = x[0] || 0
      x[1] = x[1] || ''
