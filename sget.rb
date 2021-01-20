@@ -5,6 +5,7 @@ require 'httpclient'
 require 'json'
 require 'active_support'
 require 'active_support/core_ext'
+require 'logger'
 require_relative './config.rb'
 
 def auth (reftoken)
@@ -16,10 +17,11 @@ def auth (reftoken)
     return j['access_token']
 end
 
+l = Logger.new(STDOUT)
 $stdout.sync = true
 now = Time.now.getutc
 if now < PROLOG.begin or now > CUP.end
-    puts "#{now}: Not yet time..."
+    l.error "#{now}: Not yet time..."
     exit
 end
 if now.wday.between?(1,DOW-1)
@@ -34,19 +36,19 @@ getend = now.end_of_week
 if getend > CUP.end
     getend = CUP.end
 end
-p getstart
-p getend
-p now
+l.info getstart
+l.info getend
+l.info now
 
 conn = HTTPClient.new
 db = Mysql2::Client.new(:host => "localhost", :username => DBUSER, :password => DBPASSWD, :database => DB, :encoding => "utf8mb4")
 url = "https://www.strava.com/api/v3/athlete/activities"
-p url
+l.info url
 db.query("DELETE FROM log WHERE date>'#{getstart.to_s(:db)}' AND date<'#{getend.to_s(:db)}' AND NOT pin")
 
 db.query("SELECT runnerid, runnerid, reftoken, runnername, teamid, goal FROM runners WHERE reftoken IS NOT NULL", :as => :array).each do |r|
     rid, sid, reftoken, rname, tid, goal = r 
-    puts "#{rid}, #{sid}: #{rname}"
+    l.info "#{rid}, #{sid}: #{rname}"
     token = auth(reftoken)
     after = getstart.to_i
     before = getend.to_i
@@ -58,7 +60,7 @@ db.query("SELECT runnerid, runnerid, reftoken, runnername, teamid, goal FROM run
     if resp.status == 200 then
         j = JSON.parse(resp.content)
         j.each do |run|
-          p run
+          l.info run
           id = run['id']
           type = run['type']
           distance = run['distance']

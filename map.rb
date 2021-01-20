@@ -20,6 +20,7 @@ pls.each do |p|
     l.info "+++ m#{p[0]}.png created"
     sleep 1
   else
-    l.info "--- m#{p[0]}.png exists"
+#    l.info "--- m#{p[0]}.png exists"
   end
 end
+l.info "xxxxxxxxxxxx #{Time.now} xxxxxxxxxxx"
