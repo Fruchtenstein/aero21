@@ -16,8 +16,8 @@ pls.each do |p|
       f.write(r.body)
     end
     puts "+++ m#{p[0]}.png created"
+    sleep 1
   else
     puts "--- m#{p[0]}.png exists"
   end
-  sleep 1
 end
