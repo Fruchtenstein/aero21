@@ -2,12 +2,14 @@
 require 'httpclient'
 require 'erb'
 require 'mysql2'
+require 'logger'
 require_relative './config.rb'
 
+l = Logger.new(STDOUT)
+l.info "------------ #{Time.now} -----------"
 db = Mysql2::Client.new(:host => "localhost", :username => DBUSER, :password => DBPASSWD, :database => DB, :encoding => "utf8mb4")
 pls = db.query("SELECT runid, summary_polyline FROM log", :as => :array).to_a
 pls.each do |p|
-  puts "=== #{p[0]}"
   unless File.exists?("html/maps/m#{p[0]}.png")
     url = "https://api.mapbox.com/styles/v1/mapbox/outdoors-v11/static/path-3+f44-0.5(#{ERB::Util.url_encode(p[1])})/auto/300x300?access_token=#{MAPBOX_TOKEN}"
     c = HTTPClient.new
@@ -15,9 +17,9 @@ pls.each do |p|
     File.open("html/maps/m#{p[0]}.png", 'w') do |f|
       f.write(r.body)
     end
-    puts "+++ m#{p[0]}.png created"
+    l.info "+++ m#{p[0]}.png created"
     sleep 1
   else
-    puts "--- m#{p[0]}.png exists"
+    l.info "--- m#{p[0]}.png exists"
   end
 end
