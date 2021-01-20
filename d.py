@@ -53,8 +53,8 @@ lgd = ax.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5,-0.1))
 ax.grid(which='major', color='gray', linewidth=1)
 ax.grid(which='minor')
 ax.minorticks_on()
-print('Drawing html/cup{}.png'.format(week))
-plt.savefig('html/cup{}.png'.format(week), bbox_extra_artists=(lgd,), bbox_inches='tight')
+print('Drawing html/cup{}.png'.format(week-1))
+plt.savefig('html/cup{}.png'.format(week-1), bbox_extra_artists=(lgd,), bbox_inches='tight')
 plt.close('all')
 
 if dolastweek:
