@@ -607,7 +607,7 @@ end
 #     data +=   "    <h1>Тренировки недели</h1>\n"
 #     data +=   "</center>\n"
      data +=   "<div class=\"datagrid\"><table>\n"
-     data +=   "   <thead><tr><th>Тренировки недели</th></tr></thead>\n"
+     data +=   "   <thead><tr><th>Тренировки недели</th><th></th></tr></thead>\n"
      data +=   "    <tbody>\n"
      odd = true
      p("SELECT date, runnername, distance, time, DATE_FORMAT(SEC_TO_TIME(ROUND(time/distance, 0)), '%i:%s'), \
@@ -650,7 +650,12 @@ end
        data += "        <tr><td width='30%'>#{dd}</td><td>#{t[2].round(2)} км.</td><td>#{hh}:#{mm}:#{ss}</td></tr></table>\n"
        data += "        <table border='0'><tr><td width='30%'><b>Местное время:</b></td><td width='30%'><b>Место:</b></td><td><b>Темп:</b></td></tr>\n"
        data += "        <tr><td width='30%'>#{ldd}</td><td>#{place}</td><td>#{t[4]}</td></tr></table>\n"
-       data += "     </td></tr>\n"
+       data += "     </td>\n"
+       data += "     <td>\n"
+       data += "        <hr />\n"
+       data += "        <img src='maps/m#{t[11]}.png' />\n"
+       data += "     </td>\n"
+       data += "     </tr>\n"
      end
 
      data +=   "   </tbody>\n"
