@@ -81,53 +81,73 @@ def calcwonders(d)
     # best boy in week mileage
     $l.info ("SELECT log.runnerid r, teamid t, COALESCE(SUM(distance),0) d FROM log, runners WHERE log.runnerid=runners.runnerid AND date>'#{bow}' AND date<'#{eow}' AND sex=1 AND teamid>0 GROUP BY r ORDER BY d DESC LIMIT 1")
     w = db.query("SELECT log.runnerid r, teamid t, COALESCE(SUM(distance),0) d FROM log, runners WHERE log.runnerid=runners.runnerid AND date>'#{bow}' AND date<'#{eow}' AND sex=1 AND teamid>0 GROUP BY r ORDER BY d DESC LIMIT 1", :as => :array).each[0]
-    $l.info ("REPLACE INTO wonders VALUES (#{week_number}, 'mlw', #{w[0]}, #{w[1]}, '#{w[2].round(2)} км')") if w[0]
-    db.query("REPLACE INTO wonders VALUES (#{week_number}, 'mlw', #{w[0]}, #{w[1]}, '#{w[2].round(2)} км')") if w[0]
+    if w
+        $l.info ("REPLACE INTO wonders VALUES (#{week_number}, 'mlw', #{w[0]}, #{w[1]}, '#{w[2].round(2)} км')") if w[0]
+        db.query("REPLACE INTO wonders VALUES (#{week_number}, 'mlw', #{w[0]}, #{w[1]}, '#{w[2].round(2)} км')") if w[0]
+    end
     # best girl in week mileage
     $l.info ("SELECT log.runnerid r, teamid t, COALESCE(SUM(distance),0) d FROM log, runners WHERE log.runnerid=runners.runnerid AND date>'#{bow}' AND date<'#{eow}' AND sex=0 AND teamid>0 GROUP BY r ORDER BY d DESC LIMIT 1")
     w = db.query("SELECT log.runnerid r, teamid t, COALESCE(SUM(distance),0) d FROM log, runners WHERE log.runnerid=runners.runnerid AND date>'#{bow}' AND date<'#{eow}' AND sex=0 AND teamid>0 GROUP BY r ORDER BY d DESC LIMIT 1", :as => :array).each[0]
-    $l.info ("REPLACE INTO wonders VALUES (#{week_number}, 'flw', #{w[0]}, #{w[1]}, '#{w[2].round(2)} км')") if w[0]
-    db.query("REPLACE INTO wonders VALUES (#{week_number}, 'flw', #{w[0]}, #{w[1]}, '#{w[2].round(2)} км')") if w[0]
+    if w
+        $l.info ("REPLACE INTO wonders VALUES (#{week_number}, 'flw', #{w[0]}, #{w[1]}, '#{w[2].round(2)} км')") if w[0]
+        db.query("REPLACE INTO wonders VALUES (#{week_number}, 'flw', #{w[0]}, #{w[1]}, '#{w[2].round(2)} км')") if w[0]
+    end
     # best boy in week speed
     $l.info ("SELECT log.runnerid r, teamid t, COALESCE(SUM(time)/SUM(distance), 0) s FROM log, runners WHERE log.runnerid=runners.runnerid AND date>'#{bow}' AND date<'#{eow}' AND sex=1 AND teamid>0 GROUP BY r ORDER BY s ASC LIMIT 1")
     w = db.query("SELECT log.runnerid r, teamid t, COALESCE(SUM(time)/SUM(distance), 0) s FROM log, runners WHERE log.runnerid=runners.runnerid AND date>'#{bow}' AND date<'#{eow}' AND sex=1 AND teamid>0 GROUP BY r ORDER BY s ASC LIMIT 1", :as => :array).each[0]
-    $l.info ("REPLACE INTO wonders VALUES (#{week_number}, 'mfw', #{w[0]}, #{w[1]}, CONCAT(TIME_FORMAT(SEC_TO_TIME(#{w[2].to_i}), '%i:%s'), ' мин/км'))") if w[0]
-    db.query("REPLACE INTO wonders VALUES (#{week_number}, 'mfw', #{w[0]}, #{w[1]}, CONCAT(TIME_FORMAT(SEC_TO_TIME(#{w[2].to_i}), '%i:%s'), ' мин/км'))") if w[0]
+    if w
+        $l.info ("REPLACE INTO wonders VALUES (#{week_number}, 'mfw', #{w[0]}, #{w[1]}, CONCAT(TIME_FORMAT(SEC_TO_TIME(#{w[2].to_i}), '%i:%s'), ' мин/км'))") if w[0]
+        db.query("REPLACE INTO wonders VALUES (#{week_number}, 'mfw', #{w[0]}, #{w[1]}, CONCAT(TIME_FORMAT(SEC_TO_TIME(#{w[2].to_i}), '%i:%s'), ' мин/км'))") if w[0]
+    end
     # best girl in week speed
     $l.info ("SELECT log.runnerid r, teamid t, COALESCE(SUM(time)/SUM(distance), 0) s FROM log, runners WHERE log.runnerid=runners.runnerid AND date>'#{bow}' AND date<'#{eow}' AND sex=0 AND teamid>0 GROUP BY r ORDER BY s ASC LIMIT 1")
     w = db.query("SELECT log.runnerid r, teamid t, COALESCE(SUM(time)/SUM(distance), 0) s FROM log, runners WHERE log.runnerid=runners.runnerid AND date>'#{bow}' AND date<'#{eow}' AND sex=0 AND teamid>0 GROUP BY r ORDER BY s ASC LIMIT 1", :as => :array).each[0]
-    $l.info ("REPLACE INTO wonders VALUES (#{week_number}, 'ffw', #{w[0]}, #{w[1]}, CONCAT(TIME_FORMAT(SEC_TO_TIME(#{w[2].to_i}), '%i:%s'), ' мин/км'))") if w[0]
-    db.query("REPLACE INTO wonders VALUES (#{week_number}, 'ffw', #{w[0]}, #{w[1]}, CONCAT(TIME_FORMAT(SEC_TO_TIME(#{w[2].to_i}), '%i:%s'), ' мин/км'))") if w[0]
+    if w
+        $l.info ("REPLACE INTO wonders VALUES (#{week_number}, 'ffw', #{w[0]}, #{w[1]}, CONCAT(TIME_FORMAT(SEC_TO_TIME(#{w[2].to_i}), '%i:%s'), ' мин/км'))") if w[0]
+        db.query("REPLACE INTO wonders VALUES (#{week_number}, 'ffw', #{w[0]}, #{w[1]}, CONCAT(TIME_FORMAT(SEC_TO_TIME(#{w[2].to_i}), '%i:%s'), ' мин/км'))") if w[0]
+    end
     # best boy in run mileage
     $l.info ("SELECT log.runnerid, teamid, distance, runid FROM log, runners WHERE log.runnerid=runners.runnerid AND date>'#{bow}' AND date<'#{eow}' AND sex=1 AND teamid>0 ORDER BY distance DESC LIMIT 1")
     w = db.query("SELECT log.runnerid, teamid, distance, runid FROM log, runners WHERE log.runnerid=runners.runnerid AND date>'#{bow}' AND date<'#{eow}' AND sex=1 AND teamid>0 ORDER BY distance DESC LIMIT 1", :as => :array).each[0]
-    $l.info ("REPLACE INTO wonders VALUES (#{week_number}, 'mlr', #{w[0]}, #{w[1]}, '<a href=\"http://strava.com/activities/#{w[3]}\">#{w[2].round(2)} км</a>')") if w[0]
-    db.query("REPLACE INTO wonders VALUES (#{week_number}, 'mlr', #{w[0]}, #{w[1]}, '<a href=\"http://strava.com/activities/#{w[3]}\">#{w[2].round(2)} км</a>')") if w[0]
+    if w
+        $l.info ("REPLACE INTO wonders VALUES (#{week_number}, 'mlr', #{w[0]}, #{w[1]}, '<a href=\"http://strava.com/activities/#{w[3]}\">#{w[2].round(2)} км</a>')") if w[0]
+        db.query("REPLACE INTO wonders VALUES (#{week_number}, 'mlr', #{w[0]}, #{w[1]}, '<a href=\"http://strava.com/activities/#{w[3]}\">#{w[2].round(2)} км</a>')") if w[0]
+    end
     # best girl in run mileage
     $l.info ("SELECT log.runnerid, teamid, distance, runid FROM log, runners WHERE log.runnerid=runners.runnerid AND date>'#{bow}' AND date<'#{eow}' AND sex=0 AND teamid>0 ORDER BY distance DESC LIMIT 1")
     w = db.query("SELECT log.runnerid, teamid, distance, runid FROM log, runners WHERE log.runnerid=runners.runnerid AND date>'#{bow}' AND date<'#{eow}' AND sex=0 AND teamid>0 ORDER BY distance DESC LIMIT 1", :as => :array).each[0]
-    $l.info ("REPLACE INTO wonders VALUES (#{week_number}, 'flr', #{w[0]}, #{w[1]}, '<a href=\"http://strava.com/activities/#{w[3]}\">#{w[2].round(2)} км</a>')") if w[0]
-    db.query("REPLACE INTO wonders VALUES (#{week_number}, 'flr', #{w[0]}, #{w[1]}, '<a href=\"http://strava.com/activities/#{w[3]}\">#{w[2].round(2)} км</a>')") if w[0]
+    if w
+        $l.info ("REPLACE INTO wonders VALUES (#{week_number}, 'flr', #{w[0]}, #{w[1]}, '<a href=\"http://strava.com/activities/#{w[3]}\">#{w[2].round(2)} км</a>')") if w[0]
+        db.query("REPLACE INTO wonders VALUES (#{week_number}, 'flr', #{w[0]}, #{w[1]}, '<a href=\"http://strava.com/activities/#{w[3]}\">#{w[2].round(2)} км</a>')") if w[0]
+    end
     # best boy in run speed
     $l.info ("SELECT log.runnerid, teamid, time/distance sp, runid FROM log, runners WHERE log.runnerid=runners.runnerid AND date>'#{bow}' AND date<'#{eow}' AND sex=1 AND time>0 AND distance>3.0 AND teamid>0 ORDER BY sp ASC LIMIT 1")
     w = db.query("SELECT log.runnerid, teamid, time/distance sp, runid FROM log, runners WHERE log.runnerid=runners.runnerid AND date>'#{bow}' AND date<'#{eow}' AND sex=1 AND time>0 AND distance>3.0 AND teamid>0 ORDER BY sp ASC LIMIT 1", :as => :array).each[0]
-    $l.info ("REPLACE INTO wonders VALUES (#{week_number}, 'mfr', #{w[0]}, #{w[1]}, CONCAT('<a href=\"http://strava.com/activities/#{w[3]}\">', TIME_FORMAT(SEC_TO_TIME(#{w[2].to_i}), '%i:%s'), ' мин/км</a>'))") if w[0]
-    db.query("REPLACE INTO wonders VALUES (#{week_number}, 'mfr', #{w[0]}, #{w[1]}, CONCAT('<a href=\"http://strava.com/activities/#{w[3]}\">', TIME_FORMAT(SEC_TO_TIME(#{w[2].to_i}), '%i:%s'), ' мин/км</a>'))") if w[0]
+    if w
+        $l.info ("REPLACE INTO wonders VALUES (#{week_number}, 'mfr', #{w[0]}, #{w[1]}, CONCAT('<a href=\"http://strava.com/activities/#{w[3]}\">', TIME_FORMAT(SEC_TO_TIME(#{w[2].to_i}), '%i:%s'), ' мин/км</a>'))") if w[0]
+        db.query("REPLACE INTO wonders VALUES (#{week_number}, 'mfr', #{w[0]}, #{w[1]}, CONCAT('<a href=\"http://strava.com/activities/#{w[3]}\">', TIME_FORMAT(SEC_TO_TIME(#{w[2].to_i}), '%i:%s'), ' мин/км</a>'))") if w[0]
+    end
     # best girl in run speed
     $l.info ("SELECT log.runnerid, teamid, time/distance sp, runid FROM log, runners WHERE log.runnerid=runners.runnerid AND date>'#{bow}' AND date<'#{eow}' AND sex=0 AND time>0 AND distance>3.0 AND teamid>0 ORDER BY sp ASC LIMIT 1")
     w = db.query("SELECT log.runnerid, teamid, time/distance sp, runid FROM log, runners WHERE log.runnerid=runners.runnerid AND date>'#{bow}' AND date<'#{eow}' AND sex=0 AND time>0 AND distance>3.0 AND teamid>0 ORDER BY sp ASC LIMIT 1", :as => :array).each[0]
-    $l.info ("REPLACE INTO wonders VALUES (#{week_number}, 'ffr', #{w[0]}, #{w[1]}, CONCAT('<a href=\"http://strava.com/activities/#{w[3]}\">', TIME_FORMAT(SEC_TO_TIME(#{w[2].to_i}), '%i:%s'), ' мин/км</a>'))") if w[0]
-    db.query("REPLACE INTO wonders VALUES (#{week_number}, 'ffr', #{w[0]}, #{w[1]}, CONCAT('<a href=\"http://strava.com/activities/#{w[3]}\">', TIME_FORMAT(SEC_TO_TIME(#{w[2].to_i}), '%i:%s'), ' мин/км</a>'))") if w[0]
+    if w
+        $l.info ("REPLACE INTO wonders VALUES (#{week_number}, 'ffr', #{w[0]}, #{w[1]}, CONCAT('<a href=\"http://strava.com/activities/#{w[3]}\">', TIME_FORMAT(SEC_TO_TIME(#{w[2].to_i}), '%i:%s'), ' мин/км</a>'))") if w[0]
+        db.query("REPLACE INTO wonders VALUES (#{week_number}, 'ffr', #{w[0]}, #{w[1]}, CONCAT('<a href=\"http://strava.com/activities/#{w[3]}\">', TIME_FORMAT(SEC_TO_TIME(#{w[2].to_i}), '%i:%s'), ' мин/км</a>'))") if w[0]
+    end
     # best boy in percents
     $l.info ("SELECT r,t,100*d/g pct FROM (SELECT log.runnerid r, teamid t, goal*7/365 g, COALESCE(SUM(distance),0) d FROM log, runners WHERE log.runnerid=runners.runnerid AND date>'#{bow}' AND date<'#{eow}' AND sex=1 AND teamid>0 GROUP BY r) rrs ORDER BY pct DESC LIMIT 1")
     w = db.query("SELECT r,t,100*d/g pct FROM (SELECT log.runnerid r, teamid t, goal*7/365 g, COALESCE(SUM(distance),0) d FROM log, runners WHERE log.runnerid=runners.runnerid AND date>'#{bow}' AND date<'#{eow}' AND sex=1 AND teamid>0 GROUP BY r) rrs ORDER BY pct DESC LIMIT 1", :as => :array).each[0]
-    $l.info ("REPLACE INTO wonders VALUES (#{week_number}, 'mmp', #{w[0]}, #{w[1]}, '#{w[2].round(2)}%')") if w[0]
-    db.query("REPLACE INTO wonders VALUES (#{week_number}, 'mmp', #{w[0]}, #{w[1]}, '#{w[2].round(2)}%')") if w[0]
+    if w
+        $l.info ("REPLACE INTO wonders VALUES (#{week_number}, 'mmp', #{w[0]}, #{w[1]}, '#{w[2].round(2)}%')") if w[0]
+        db.query("REPLACE INTO wonders VALUES (#{week_number}, 'mmp', #{w[0]}, #{w[1]}, '#{w[2].round(2)}%')") if w[0]
+    end
     # best girl in percents
     $l.info ("SELECT r,t,100*d/g pct FROM (SELECT log.runnerid r, teamid t, goal*7/365 g, COALESCE(SUM(distance),0) d FROM log, runners WHERE log.runnerid=runners.runnerid AND date>'#{bow}' AND date<'#{eow}' AND sex=0 AND teamid>0 GROUP BY r) rrs ORDER BY pct DESC LIMIT 1")
     w = db.query("SELECT r,t,100*d/g pct FROM (SELECT log.runnerid r, teamid t, goal*7/365 g, COALESCE(SUM(distance),0) d FROM log, runners WHERE log.runnerid=runners.runnerid AND date>'#{bow}' AND date<'#{eow}' AND sex=0 AND teamid>0 GROUP BY r) rrs ORDER BY pct DESC LIMIT 1", :as => :array).each[0]
-    $l.info ("REPLACE INTO wonders VALUES (#{week_number}, 'fmp', #{w[0]}, #{w[1]}, '#{w[2].round(2)}%')") if w[0]
-    db.query("REPLACE INTO wonders VALUES (#{week_number}, 'fmp', #{w[0]}, #{w[1]}, '#{w[2].round(2)}%')") if w[0]
+    if w
+        $l.info ("REPLACE INTO wonders VALUES (#{week_number}, 'fmp', #{w[0]}, #{w[1]}, '#{w[2].round(2)}%')") if w[0]
+        db.query("REPLACE INTO wonders VALUES (#{week_number}, 'fmp', #{w[0]}, #{w[1]}, '#{w[2].round(2)}%')") if w[0]
+    end
 end
 
 def calcpoints (d)
