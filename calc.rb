@@ -6,32 +6,32 @@ require 'pp'
 require 'logger'
 require_relative './config.rb'
 
-def calcweek (now)
-    $l.info ">> calcweek #{now}"
-    week_number = now.to_date.strftime('%W').to_i
-    db = Mysql2::Client.new(:host => "localhost", :username => DBUSER, :password => DBPASSWD, :database => DB, :encoding => "utf8mb4")
-    teams = []
-    (1..TEAMS).each do |t|
-        num_of_runners = db.query("SELECT COUNT(*) FROM runners WHERE teamid=#{t}", :as => :array).each[0][0]
-        tdist = 0
-        sum_pct = 0
-        db.query("SELECT runnerid, goal*7/365.0 FROM runners WHERE teamid=#{t}", :as => :array).each do |r|
-            dist = db.query("SELECT COALESCE(SUM(distance),0) FROM log WHERE runnerid=#{r[0]} AND date>'#{now.beginning_of_week.to_s(:db)}' AND date<'#{now.end_of_week.to_s(:db)}'", :as => :array).each[0][0]
-            goal = r[1]
-            sum_pct += (dist/goal)*100
-            tdist += dist
-        end
-        teams << [t, week_number, sum_pct/num_of_runners, tdist]
-    end
-    teams.sort! { |x,y| y[2] <=> x[2] }
-    teams.each do |t|
-        place = teams.index(t)+1
-        points = 5*(TEAMS-place)
-        $l.info "REPLACE INTO points VALUES (#{t[0]}, #{week_number}, #{points}, #{t[2]}, #{t[3]})"
-        db.query("REPLACE INTO points VALUES (#{t[0]}, #{week_number}, #{points}, #{t[2]}, #{t[3]})")
-        db.query("REPLACE INTO cup VALUES (#{t[0]}, #{week_number}, #{points}, #{t[2]}, #{t[3]})")
-    end
-end
+#def calcweek (now)
+#    $l.info ">> calcweek #{now}"
+#    week_number = now.to_date.strftime('%W').to_i
+#    db = Mysql2::Client.new(:host => "localhost", :username => DBUSER, :password => DBPASSWD, :database => DB, :encoding => "utf8mb4")
+#    teams = []
+#    (1..TEAMS).each do |t|
+#        num_of_runners = db.query("SELECT COUNT(*) FROM runners WHERE teamid=#{t}", :as => :array).each[0][0]
+#        tdist = 0
+#        sum_pct = 0
+#        db.query("SELECT runnerid, goal*7/365.0 FROM runners WHERE teamid=#{t}", :as => :array).each do |r|
+#            dist = db.query("SELECT COALESCE(SUM(distance),0) FROM log WHERE runnerid=#{r[0]} AND date>'#{now.beginning_of_week.to_s(:db)}' AND date<'#{now.end_of_week.to_s(:db)}'", :as => :array).each[0][0]
+#            goal = r[1]
+#            sum_pct += (dist/goal)*100
+#            tdist += dist
+#        end
+#        teams << [t, week_number, sum_pct/num_of_runners, tdist]
+#    end
+#    teams.sort! { |x,y| y[2] <=> x[2] }
+#    teams.each do |t|
+#        place = teams.index(t)+1
+#        points = 5*(TEAMS-place)
+#        $l.info "REPLACE INTO points VALUES (#{t[0]}, #{week_number}, #{points}, #{t[2]}, #{t[3]})"
+#        db.query("REPLACE INTO points VALUES (#{t[0]}, #{week_number}, #{points}, #{t[2]}, #{t[3]})")
+#        db.query("REPLACE INTO cup VALUES (#{t[0]}, #{week_number}, #{points}, #{t[2]}, #{t[3]})")
+#    end
+#end
 
 def calcwlog(d)
     $l.info ">> calcwlog #{d}"
@@ -164,10 +164,11 @@ def calcpoints (d)
     place = 0
     db.query("SELECT teamid, 100*distance/goal, distance, goal FROM teamwlog WHERE week=#{week_number} ORDER BY distance/goal", :as => :array).each do |t|
         wonders = db.query("SELECT count(*) FROM wonders WHERE teamid=#{t[0]} AND week=#{week_number}", :as => :array).each[0][0]
-        points = place * 5 + wonders * 3
+        points = place * 5 
+        bonus = wonders * 3
         place += 1
-        $l.info ("REPLACE INTO points VALUES (#{t[0]}, #{week_number}, #{points}, #{t[1]}, #{t[2]}, #{t[3]})")
-        db.query("REPLACE INTO points VALUES (#{t[0]}, #{week_number}, #{points}, #{t[1]}, #{t[2]}, #{t[3]})")
+        $l.info ("REPLACE INTO points VALUES (#{t[0]}, #{week_number}, #{points}, #{t[1]}, #{t[2]}, #{t[3]}, #{bonus})")
+        db.query("REPLACE INTO points VALUES (#{t[0]}, #{week_number}, #{points}, #{t[1]}, #{t[2]}, #{t[3]}, #{bonus})")
     end
 end
 #def calcprolog ()

@@ -8,7 +8,7 @@ require_relative './config.rb'
 def printweek (w)
     output = ""
     db = Mysql2::Client.new(:host => "localhost", :username => DBUSER, :password => DBPASSWD, :database => DB, :encoding => "utf8mb4")
-    teams = db.query("SELECT teams.teamid, points, pcts, teamname  FROM points,teams WHERE points.teamid=teams.teamid AND week=#{w} ORDER BY points DESC", :as => :array).to_a
+    teams = db.query("SELECT teams.teamid, points, pcts, teamname, bonus FROM points,teams WHERE points.teamid=teams.teamid AND week=#{w} ORDER BY points+bonus DESC", :as => :array).to_a
     output +=   "<center>\n"
     output +=   "    <br />\n"
     p "printweek: #{w}; #{Date.today.strftime('%W').to_i}; #{Date.today.wday}; #{DOW}\n"
@@ -21,16 +21,16 @@ def printweek (w)
     output +=   "    <br />\n"
     output +=   "</center>\n"
     output +=   "<div class=\"datagrid\"><table>\n"
-    output +=   "   <thead><tr><th>Команда</th><th>Выполнено (%)</th><th>Очки</th><th>Сумма</th></tr></thead>\n"
+    output +=   "   <thead><tr><th>Команда</th><th>Выполнено (%)</th><th>Очки</th><th>Бонусы</th><th>Очки+бонусы</th><th>Сумма</th></tr></thead>\n"
     output += "<tbody>\n\n"
     odd = true
     teams.each do |t|
         p t
-        sum = db.query("SELECT SUM(points) FROM points WHERE teamid=#{t[0]} AND week<=#{w}", :as => :array).to_a[0]
+        sum = db.query("SELECT SUM(points+bonus) FROM points WHERE teamid=#{t[0]} AND week<=#{w}", :as => :array).to_a[0]
         if odd
-            output += "  <tr><td>#{t[3]}</td><td>#{t[2].round(2)}</td><td>#{t[1]}</td><td>#{sum[0]}</td></tr>\n"
+            output += "  <tr><td>#{t[3]}</td><td>#{t[2].round(2)}</td><td>#{t[1]}</td><td>#{t[4]}</td><td>#{t[1]+t[4]}</td><td>#{sum[0]}</td></tr>\n"
         else
-            output += "  <tr class=\"alt\"><td>#{t[3]}</td><td>#{t[2].round(2)}</td><td>#{t[1]}</td><td>#{sum[0]}</td></tr>\n"
+            output += "  <tr class=\"alt\"><td>#{t[3]}</td><td>#{t[2].round(2)}</td><td>#{t[1]}</td><td>#{t[4]}</td><td>#{t[1]+t[4]}</td><td>#{sum[0]}</td></tr>\n"
         end
         odd = !odd
     end
@@ -116,9 +116,9 @@ if now > CHAMP.begin
     w = Date.today.strftime('%W').to_i
     p w
     if Date.today.wday.between?(1, DOW-1)
-        teams = db.query("SELECT teams.teamid, teamname, COALESCE(SUM(points),0) AS p FROM points, teams WHERE points.teamid=teams.teamid AND week<#{w-1} GROUP BY teams.teamid ORDER BY p DESC", :as => :array).to_a
+        teams = db.query("SELECT teams.teamid, teamname, COALESCE(SUM(points),0) AS p, COALESCE(SUM(bonus),0) AS b FROM points, teams WHERE points.teamid=teams.teamid AND week<#{w-1} GROUP BY teams.teamid ORDER BY p+b DESC", :as => :array).to_a
     else
-        teams = db.query("SELECT teams.teamid, teamname, COALESCE(SUM(points),0) AS p FROM points, teams WHERE points.teamid=teams.teamid AND week<#{w} GROUP BY teams.teamid ORDER BY p DESC", :as => :array).to_a
+        teams = db.query("SELECT teams.teamid, teamname, COALESCE(SUM(points),0) AS p, COALESCE(SUM(bonus),0) AS b FROM points, teams WHERE points.teamid=teams.teamid AND week<#{w} GROUP BY teams.teamid ORDER BY p+b DESC", :as => :array).to_a
     end
     champ +=   "<center>\n"
     champ +=   "    <br />\n"
@@ -131,9 +131,9 @@ if now > CHAMP.begin
     odd = true
     teams.each do |t|
         if odd
-            champ += "  <tr><td>#{t[1]}</td><td>#{t[2]}</td></tr>\n"
+            champ += "  <tr><td>#{t[1]}</td><td>#{t[2]+t[3]}</td></tr>\n"
         else
-            champ += "  <tr class=\"alt\"><td>#{t[1]}</td><td>#{t[2]}</td></tr>\n"
+            champ += "  <tr class=\"alt\"><td>#{t[1]}</td><td>#{t[2]+t[3]}</td></tr>\n"
         end
         odd = !odd
     end
