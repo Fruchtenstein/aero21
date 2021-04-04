@@ -43,7 +43,7 @@ teams = c1.fetchall()
 fig, ax = plt.subplots()
 for t in teams:
     team = t[1]
-    c1.execute('SELECT points FROM points WHERE teamid=%s ORDER BY week', (t[0],))
+    c1.execute('SELECT points+bonus FROM points WHERE teamid=%s ORDER BY week', (t[0],))
     a = [x[0] for x in c1.fetchall()]
     print(weeks)
     print(a)
@@ -62,7 +62,7 @@ if dolastweek:
     weeks.pop()
     for t in teams:
         team = t[1]
-        c1.execute('SELECT points FROM points WHERE teamid=%s ORDER BY week', (t[0],))
+        c1.execute('SELECT points+bonus FROM points WHERE teamid=%s ORDER BY week', (t[0],))
         a = [x[0] for x in c1.fetchall()]
         a.pop()
         print(weeks)
